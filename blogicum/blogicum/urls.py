@@ -7,8 +7,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
 
 
-handle404 = 'pages.views.page_not_found'
-handle500 = 'pages.views.error_500'
+handler404 = 'pages.views.page_not_found'
+handler500 = 'pages.views.error_500'
 
 urlpatterns = [
     path('', include('blog.urls')),

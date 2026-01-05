@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Prefetch
 
@@ -13,7 +13,7 @@ from django.core.paginator import Paginator
 
 from .models import Post, Category, Comment
 from .forms import ProfileUpdateForm, AddCommentForm, PostForm
-
+from .mixins import AuthorRequiredMixin
 
 User = get_user_model()
 
@@ -136,7 +136,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         )
 
 
-class PostUpdateView(LoginRequiredMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, AuthorRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/create.html'
@@ -148,7 +148,7 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
         )
 
 
-class PostDeleteView(LoginRequiredMixin, DeleteView):
+class PostDeleteView(LoginRequiredMixin, AuthorRequiredMixin, DeleteView):
     model = Post
     template_name = 'blog/create.html'
     context_object_name = 'post'
@@ -182,13 +182,7 @@ def add_comment(request, pk):
     return redirect('blog:post_detail', pk=post.pk)
 
 
-class CommentCreateView(LoginRequiredMixin, CreateView):
-    model = Comment
-    fields = ['text']
-    template_name = 'blog/comments.html'
-
-
-class CommentUpdateView(LoginRequiredMixin, UpdateView):
+class CommentUpdateView(LoginRequiredMixin, AuthorRequiredMixin, UpdateView):
     model = Comment
     fields = ['text']
     template_name = 'blog/comment.html'
@@ -201,7 +195,7 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
         )
 
 
-class CommentDeleteView(LoginRequiredMixin, DeleteView):
+class CommentDeleteView(LoginRequiredMixin, AuthorRequiredMixin, DeleteView):
     model = Comment
     template_name = 'blog/comment.html'
     pk_url_kwarg = 'comment_id'
